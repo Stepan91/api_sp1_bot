@@ -3,6 +3,9 @@ env/
 venv/
 .venv
 .venv/
+.vscode
+./vscode
+*.vscode
 
 __pycache__/
 *.py[cod]
