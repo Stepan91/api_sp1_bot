@@ -50,7 +50,7 @@ def get_homework_statuses(current_timestamp):
 
 
 def send_message(bot, message):
-    return bot.send_message(bot, chat_id=CHAT_ID, text=message)
+    return send_message(bot, chat_id=CHAT_ID, text=message)
 
 
 def main():
