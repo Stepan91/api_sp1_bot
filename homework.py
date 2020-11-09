@@ -49,9 +49,8 @@ def get_homework_statuses(current_timestamp):
         return f'Ошибка при попытке запроса к серверу: {e}'
 
 
-def send_message(message):
-    message = bot.send_message(chat_id=CHAT_ID, text=message)
-    return message
+def send_message(bot, message):
+    return bot.send_message(bot, chat_id=CHAT_ID, text=message)
 
 
 def main():
