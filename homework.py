@@ -19,15 +19,14 @@ bot = telegram.Bot(token=TELEGRAM_TOKEN)
 
 
 def parse_homework_status(homework):
-    homework_name = homework['homework_name']
-    homework_status = homework['status']
-    if homework_name != homework['homework_name']:
+    homework_name = homework.get('homework_name')
+    homework_status = homework.get('status')
+    if homework_name is None:
         return 'Ошибка в получении имени ДЗ'
     if homework_status is None:
-        logging.error(msg='Ошибка в получении статуса ДЗ', exc_info=True)
+        return 'Ошибка в получении статуса ДЗ'
     if homework_status not in VALID_VALUES:
-        logging.error(msg='Статус может быть только <approved>'
-                              'или <rejected>', exc_info=True)
+        return'Статус может быть только <approved> или <rejected>'
     if homework_status == 'rejected':
         verdict = 'К сожалению в работе нашлись ошибки.'
     else:
@@ -36,14 +35,18 @@ def parse_homework_status(homework):
 
 
 def get_homework_statuses(current_timestamp):
-    headers = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
-    params = {'from_date': current_timestamp or None}
     url = 'https://praktikum.yandex.ru/api/user_api/homework_statuses/'
+    headers = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
+    try:
+        params = {'from_date': current_timestamp}
+    except current_timestamp == None:
+        current_timestamp = int(time.time())
+        logging.INFO('Точка отсчета определена с текущей даты')
     try:
         homework_statuses = requests.get(url, headers=headers, params=params)
         return homework_statuses.json()
-    except (requests.RequestException, ValueError):
-        logging.error(msg = 'Ошибка получения статуса ДЗ', exc_info=True)
+    except Exception as e:
+        return f'Ошибка при попытке запроса к серверу: {e}'
 
 
 def send_message(message):
