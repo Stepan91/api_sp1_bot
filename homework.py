@@ -15,7 +15,7 @@ TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 VALID_VALUES = ('rejected', 'approved')
 
-bot = telegram.Bot(token=TELEGRAM_TOKEN)
+telebot = telegram.Bot(token=TELEGRAM_TOKEN)
 
 
 def parse_homework_status(homework):
@@ -50,7 +50,8 @@ def get_homework_statuses(current_timestamp):
 
 
 def send_message(bot, message):
-    return send_message(bot, chat_id=CHAT_ID, text=message)
+    bot = telebot
+    return telebot.send_message(chat_id=CHAT_ID, text=message)
 
 
 def main():
