@@ -15,8 +15,6 @@ TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 VALID_VALUES = ('rejected', 'approved')
 
-telebot = telegram.Bot(token=TELEGRAM_TOKEN)
-
 
 def parse_homework_status(homework):
     homework_name = homework.get('homework_name')
@@ -35,33 +33,34 @@ def parse_homework_status(homework):
 
 
 def get_homework_statuses(current_timestamp):
+    current_timestamp = current_timestamp or int(time.time())
     url = 'https://praktikum.yandex.ru/api/user_api/homework_statuses/'
     headers = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
-    try:
-        params = {'from_date': current_timestamp}
-    except current_timestamp == None:
-        current_timestamp = int(time.time())
-        logging.INFO('Точка отсчета определена с текущей даты')
+    params = {'from_date': current_timestamp}
     try:
         homework_statuses = requests.get(url, headers=headers, params=params)
         return homework_statuses.json()
     except Exception as e:
         return f'Ошибка при попытке запроса к серверу: {e}'
 
-
-def send_message(bot, message):
-    bot = telebot
-    return telebot.send_message(chat_id=CHAT_ID, text=message)
+# Яндекс поменял тесты: теперь нужно,
+# чтобы функция принимала два аргумента
+# + сответственно изменил вызов send_message в 61 строке
+def send_message(message, bot_client):
+    return bot_client.send_message(chat_id=CHAT_ID, text=message)
 
 
 def main():
+    # инициализировать бота согласно новому прекоду нужно здесь,
+    # что я и сделал...
+    telebot = telegram.Bot(token=TELEGRAM_TOKEN)
     current_timestamp = int(time.time())
 
     while True:
         try:
             new_homework = get_homework_statuses(current_timestamp)
             if new_homework.get('homeworks'):
-                send_message(parse_homework_status(new_homework.get('homeworks')[0]))
+                send_message(parse_homework_status(new_homework.get('homeworks')[0]), telebot)
             current_timestamp = new_homework.get('current_date')
             time.sleep(300)
 
