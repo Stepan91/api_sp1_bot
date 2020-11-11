@@ -43,16 +43,12 @@ def get_homework_statuses(current_timestamp):
     except Exception as e:
         return f'Ошибка при попытке запроса к серверу: {e}'
 
-# Яндекс поменял тесты: теперь нужно,
-# чтобы функция принимала два аргумента
-# + сответственно изменил вызов send_message в 61 строке
+
 def send_message(message, bot_client):
     return bot_client.send_message(chat_id=CHAT_ID, text=message)
 
 
 def main():
-    # инициализировать бота согласно новому прекоду нужно здесь,
-    # что я и сделал...
     telebot = telegram.Bot(token=TELEGRAM_TOKEN)
     current_timestamp = int(time.time())
 
